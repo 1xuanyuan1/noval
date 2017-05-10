@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- "4"  # nodejs的版本
+- "6"  # nodejs的版本
 branches:
   only:
   - master  # 设置自动化部署的分支
