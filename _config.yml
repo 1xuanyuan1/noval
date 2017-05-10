@@ -70,4 +70,4 @@ theme: next
 deploy:
   type: git
   repo: git@github.com:1xuanyuan1/noval.git
-  branch: coding-pages
+  branch: gh-pages
