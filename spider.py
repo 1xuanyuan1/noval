@@ -21,7 +21,7 @@ urls = {
     '全职法师':'/4/4438/'
 }
 
-postsPath =r'/noval'+ os.sep+'source'+os.sep+'_posts'+os.sep
+postsPath =r'.'+ os.sep+'source'+os.sep+'_posts'+os.sep
 
 class Post:
     __slots__ = ('book', 'title', 'content')

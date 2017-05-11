@@ -1,1 +1,1 @@
-*/2 * * * * python3 /noval/spider.py > /noval/noval.log
+*/2 * * * * cd /noval/ && python3 spider.py > noval.log
