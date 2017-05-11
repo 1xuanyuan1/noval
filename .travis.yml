@@ -24,4 +24,4 @@ before_install:
 install:
 - npm install
 script:
-- hexo clean && hexo g -d
+- hexo clean && hexo g && cp CHAME public/CHAME && hexo d
