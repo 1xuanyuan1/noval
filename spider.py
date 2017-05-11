@@ -7,28 +7,70 @@ from datetime import datetime
 requests.adapters.DEFAULT_RETRIES = 5
 
 categories = {
-    'Duke': {
-        '龙王传说': '/5/5782/',
-        '大主宰': '/0/330/',
-        '永夜君王': '/2/2790/',
-        '雪鹰领主': '/4/4364/',
-        '儒道至圣': '/3/3292/',
-        '放开那个女巫':'/6/6319/',
-        '修真聊天群':'/6/6424/',
-        '我真是大明星':'/3/3826/',
-        '通天仙路': '/6/6434/',
-        '一念永恒': '/6/6145/',
-        '天道图书馆': '/6/6435/',
-        '全职法师':'/4/4438/'
+    '龙王传说': {
+        'url': '/5/5782/',
+        'tags': '[Duke, Hannb]'
+    },
+    '大主宰': {
+        'url': '/0/330/',
+        'tags': '[Duke, Hannb]'
+    },
+    '雪鹰领主': {
+        'url': '/4/4364/',
+        'tags': '[Duke, Hannb]'
+    },
+    '通天仙路': {
+        'url': '/6/6434/',
+        'tags': '[Duke, Hannb]'
+    },
+    '一念永恒': {
+        'url': '/6/6145/',
+        'tags': '[Duke, Hannb]'
+    },
+    '儒道至圣': {
+        'url': '/3/3292/',
+        'tags': '[Duke]'
+    },
+    '放开那个女巫': {
+        'url': '/6/6319/',
+        'tags': '[Duke]'
+    },
+    '修真聊天群': {
+        'url': '/6/6424/',
+        'tags': '[Duke]'
+    },
+    '我真是大明星': {
+        'url': '/3/3826/',
+        'tags': '[Duke]'
+    },
+    '天道图书馆': {
+        'url': '/6/6435/',
+        'tags': '[Duke]'
+    },
+    '全职法师': {
+        'url': '/4/4438/',
+        'tags': '[Duke]'
+    },
+    '剑王朝': {
+        'url': '/3/3461/',
+        'tags': '[Hannb]'
+    },
+    '剑王朝': {
+        'url': '/3/3461/',
+        'tags': '[Hannb]'
+    },
+    '永恒国度': {
+        'url': '/6/6377/',
+        'tags': '[Hannb]'
     }
 }
 
 postsPath =r'.'+ os.sep+'source'+os.sep+'_posts'+os.sep
 
 class Post:
-    __slots__ = ('categorie', 'book', 'title', 'content')
-    def __init__(self, categorie, book, title, content):
-        self.categorie = categorie
+    __slots__ = ('tags', 'book', 'title', 'content')
+    def __init__(self, tags, book, title, content):
+        self.tags = tags
         self.book = book
         self.title = title
         self.content = content
@@ -40,8 +82,8 @@ class Post:
                 '---\n',
                 'title: ' + self.title + '\n',
                 'date: ' + time.strftime('%F %T') + '\n',
-                'categories: ' + self.categorie + '\n',
-                'tags: ' + self.book + '\n',
+                'categories: ' + self.book + '\n',
+                'tags: ' + self.tags + '\n',
                 '---\n',
                 self.content
             ])
@@ -73,29 +115,25 @@ def PushGit():
 
 
 flag = False
-for categorie, urls in categories.items():
+for book, item in categories.items():
     try:
-        for book, url in urls.items():
-            try:
-                html = GetHTML(url)
-                title, href = ParseA(html,url)
-                postHtml = GetHTML(url + href)
-                content = ParsePostHtml(postHtml)
-                content = content.strip('shipei_x()').replace('\xa0\xa0\xa0\xa0', '\n')
-                if len(content)<200:
-                    continue
-                title = book+' '+title
-                if title+'.md' in os.listdir(postsPath):
-                    print(title+' 未更新 '+time.strftime('%F %T'))
-                    continue
-                else:
-                    print(title+' 更新 '+time.strftime('%F %T'))
-                newPost = Post(categorie, book, title, content)
-                newPost.WriteMDFile()
-                flag = True
-            except Exception as e:
-                print(e)
-                continue
+        url = item['url']
+        html = GetHTML(url)
+        title, href = ParseA(html,url)
+        postHtml = GetHTML(url + href)
+        content = ParsePostHtml(postHtml)
+        content = content.strip('shipei_x()').replace('\xa0\xa0\xa0\xa0', '\n')
+        if len(content)<200:
+            continue
+        title = book+' '+title
+        if title+'.md' in os.listdir(postsPath):
+            print(title+' 未更新 '+time.strftime('%F %T'))
+            continue
+        else:
+            print(title+' 更新 '+time.strftime('%F %T'))
+        newPost = Post(item['tags'], book, title, content)
+        newPost.WriteMDFile()
+        flag = True
     except Exception as e:
         print(e)
         continue
