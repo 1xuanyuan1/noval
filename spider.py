@@ -37,7 +37,7 @@ class Post:
                 '---\n',
                 'title: ' + self.title + '\n',
                 'date: ' + time.strftime('%F %T') + '\n',
-                'tag: ' + self.book + '\n',
+                'tags: ' + self.book + '\n',
                 '---\n',
                 self.content
             ])
