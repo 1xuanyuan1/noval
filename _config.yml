@@ -46,7 +46,6 @@ highlight:
 # Category & Tag
 default_category: uncategorized
 category_map:
-  Duke: duke
 tag_map:
 
 # Date / Time format
