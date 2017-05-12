@@ -161,6 +161,6 @@ for book, item in categories.items():
     except Exception as e:
         print(e)
         continue
-print(flag)
+        
 if flag :
     PushGit()
