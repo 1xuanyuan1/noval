@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from bs4 import BeautifulSoup
 import requests
 import os
@@ -66,6 +67,7 @@ categories = {
 }
 
 postsPath =r'.'+ os.sep+'source'+os.sep+'_posts'+os.sep
+flag = False # 是否有更新
 
 class Post:
     __slots__ = ('tags', 'book', 'title', 'content')
@@ -94,7 +96,7 @@ def GetHTML(url):
     return html.content
 
 #从小说首页HTML文件中解析出a标签，并返回最新章节地址
-def ParseA(html,url):
+def ParseA(html):
     soup = BeautifulSoup(html, 'lxml')
     a = soup.select_one('a[href$=.html]')
     title = a.get_text()
@@ -107,33 +109,55 @@ def ParsePostHtml(html):
     content = soup.select_one('#nr1').get_text()
     return content
 
+# 检查是否有更新
+def isUpdate(title):
+    if title+'.md' in os.listdir(postsPath):
+        return False
+    else:
+        return True
+
+# 保存内容
+def Save(url, book, title, tags):
+    flag = True
+    postHtml = GetHTML(url)
+    content = ParsePostHtml(postHtml)
+    content = content.strip('shipei_x()').replace('\xa0\xa0\xa0\xa0', '\n')
+    if len(content) > 200: # 若文字数过少则表示该章小说可能是声明之类 不保存
+        newPost = Post(tags, book, title, content)
+        newPost.WriteMDFile()
+        print(title+' 更新 '+time.strftime('%F %T'))
+
+#从小说首页HTML文件中解析出所有目录
+def ParseDirectory(html, book, tags):
+    soup = BeautifulSoup(html, 'lxml')
+    directory = soup.select('.chapter a')
+    updated = False # 该小说是否有更新
+    for item in directory:
+        title = item.get_text()
+        title = book+' '+title
+        url = item.get('href')
+        if isUpdate(title):
+            Save(url, book, title, tags)
+            updated = True
+        else:
+            break
+    return updated
+
 def PushGit():
     os.system('git add %s*'%(postsPath))
     os.system('git commit -m "%s"'%('更新小说内容'))
     os.system('git push')
     print('推送完毕')
 
-
-flag = False
 for book, item in categories.items():
     try:
         url = item['url']
         html = GetHTML(url)
-        title, href = ParseA(html,url)
-        postHtml = GetHTML(url + href)
-        content = ParsePostHtml(postHtml)
-        content = content.strip('shipei_x()').replace('\xa0\xa0\xa0\xa0', '\n')
-        if len(content)<200:
-            continue
-        title = book+' '+title
-        if title+'.md' in os.listdir(postsPath):
-            print(title+' 未更新 '+time.strftime('%F %T'))
-            continue
+        updated = ParseDirectory(html, book, item['tags'])
+        if updated:
+            print(book+' 有更新 '+time.strftime('%F %T'))
         else:
-            print(title+' 更新 '+time.strftime('%F %T'))
-        newPost = Post(item['tags'], book, title, content)
-        newPost.WriteMDFile()
-        flag = True
+            print(book+' 未更新 '+time.strftime('%F %T'))
     except Exception as e:
         print(e)
         continue
