@@ -118,7 +118,6 @@ def isUpdate(title):
 
 # 保存内容
 def Save(url, book, title, tags):
-    flag = True
     postHtml = GetHTML(url)
     content = ParsePostHtml(postHtml)
     content = content.strip('shipei_x()').replace('\xa0\xa0\xa0\xa0', '\n')
@@ -144,7 +143,7 @@ def ParseDirectory(html, book, tags):
     return updated
 
 def PushGit():
-    os.system('git add %s*'%(postsPath))
+    os.system('git add .')
     os.system('git commit -m "%s"'%('更新小说内容'))
     os.system('git push')
     print('推送完毕')
@@ -156,10 +155,12 @@ for book, item in categories.items():
         updated = ParseDirectory(html, book, item['tags'])
         if updated:
             print(book+' 有更新 '+time.strftime('%F %T'))
+            flag = True
         else:
             print(book+' 未更新 '+time.strftime('%F %T'))
     except Exception as e:
         print(e)
         continue
+print(flag)
 if flag :
     PushGit()
