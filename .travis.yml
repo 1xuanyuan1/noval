@@ -24,4 +24,4 @@ before_install:
 install:
 - npm install
 script:
-- hexo clean && hexo g && cp CNAME public/CNAME && hexo d
+- hexo clean && hexo g -d
